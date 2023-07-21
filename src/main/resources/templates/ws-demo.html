@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Calculator</title>
+    <script src="/js/uuid/8.3.2/uuidv4.min.js"></script>
+    <script>
+        function generateUUID() {
+            return uuidv4();
+        }
+
+        function connectWebSocket() {
+            let sessionId = localStorage.getItem("sessionId");
+            if (!sessionId) {
+                sessionId = generateUUID();
+                localStorage.setItem("sessionId", sessionId);
+            }
+
+            const webSocket = new WebSocket("ws://127.0.0.1:8080/websocket/" + sessionId);
+
+            webSocket.onopen = function () {
+                console.log("WebSocket connected");
+            };
+
+            webSocket.onmessage = function (event) {
+                const result = event.data;
+                document.getElementById("output").value = result;
+            };
+
+            webSocket.onclose = function (event) {
+                console.log("WebSocket closed with code: " + event.code);
+            };
+
+            webSocket.onerror = function (error) {
+                console.error("WebSocket error:", error);
+            };
+
+            return webSocket;
+        }
+
+        function calculate() {
+            const input = parseInt(document.getElementById("input").value);
+            const sessionId = localStorage.getItem("sessionId");
+
+            fetch("/compute/square", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    param: input,
+                    session: sessionId,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const result = data.data; // 获取结果值
+                    document.getElementById("output").innerText = "计算结果：" + result;
+                })
+                .catch(error => {
+                    console.error("请求出错:", error);
+                });
+        }
+
+    </script>
+</head>
+<body>
+<h1>WebSocket Calculator</h1>
+<label for="input">Input:</label>
+<input type="number" id="input"/><br/><br/>
+<button onclick="calculate()">Calculate</button>
+<br/><br/>
+<label for="output">Output:</label>
+<textarea id="output" readonly></textarea>
+</body>
+</html>
