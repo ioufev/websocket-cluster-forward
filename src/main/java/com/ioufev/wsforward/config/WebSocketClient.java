@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
-import javax.websocket.server.PathParam;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
@@ -31,14 +30,13 @@ public class WebSocketClient {
         log.info("Client onMessage: " + message);
     }
 
-
     @OnClose
     public void onClose() {
         log.info("onOpen.........onClose");
     }
 
     @OnOpen
-    public void onOpen(Session session, @PathParam(value = "projectId") String projectId) {
+    public void onOpen(Session session) {
         log.info("onOpen.........client");
     }
 

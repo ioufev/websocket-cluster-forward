@@ -27,7 +27,6 @@ public class WebSocketServer {
 
     private static final Logger log = LoggerFactory.getLogger(WebSocketServer.class);
 
-
     private String sessionId;
     private Session session;
 
@@ -37,7 +36,6 @@ public class WebSocketServer {
     public void setApplicationContext(RedisPublisher redisPublisher) {
         WebSocketServer.redisPublisher= redisPublisher;
     }
-
 
     private static CopyOnWriteArraySet<WebSocketServer> webSockets = new CopyOnWriteArraySet<>();
 
@@ -58,9 +56,6 @@ public class WebSocketServer {
 
     }
 
-    /**
-     *
-     */
     @OnClose
     public void onClose() {
         sessionPool.remove(this.sessionId);
@@ -69,21 +64,13 @@ public class WebSocketServer {
     }
 
     @OnMessage
-    public void onMessage(@PathParam(value = "key") String pkey, String message) {
-        if(pkey.contains("_")){
-            log.info("【websocket消息】收到算法端服务消息message:" + message);
-//			String key = pkey.split("_")[1];
-            String key = pkey.substring(pkey.indexOf("_") + 1);
-            sendOneMessage(key, message);
-        } else {
-            log.info("【websocket消息】收到客户端服务消息:" + message);
-        }
+    public void onMessage(@PathParam(value = "key") String key, String message) {
+        log.info("【websocket消息】收到消息message:" + message);
+        sendOneMessage(key, message);
     }
 
     /**
      * 广播消息
-     *
-     * @param message
      */
     public void sendAllMessage(String message) {
         for (WebSocketServer webSocket : webSockets) {
@@ -97,18 +84,14 @@ public class WebSocketServer {
     }
 
     /**
-     * 此为单点消息
-     *
-     * @param key
-     * @param message
+     * 单点消息
      */
     public void sendOneMessage(String key, String message) {
 
-//		Session session = sessionPool.get(pkey);
+//		Session session = sessionPool.get(key);
         Session session = getSession(key);
         if (session != null) {
             try {
-//				session.getAsyncRemote().sendText(message);
                 session.getBasicRemote().sendText(message);
             } catch (Exception e) {
                 e.printStackTrace();
