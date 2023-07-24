@@ -9,6 +9,8 @@
             return uuidv4();
         }
 
+        connectWebSocket();
+
         function connectWebSocket() {
             let sessionId = localStorage.getItem("sessionId");
             if (!sessionId) {
@@ -16,7 +18,7 @@
                 localStorage.setItem("sessionId", sessionId);
             }
 
-            const webSocket = new WebSocket("ws://127.0.0.1:8080/websocket/" + sessionId);
+            const webSocket = new WebSocket("ws://127.0.0.1:5200/websocket/" + sessionId);
 
             webSocket.onopen = function () {
                 console.log("WebSocket connected");

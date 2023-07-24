@@ -20,7 +20,7 @@ public class WebSocketClient {
     /**
      * 计算结果地址
      */
-    @Value("${ws.uri:ws://127.0.0.1:8080/websocket/}")
+    @Value("${ws.uri:ws://127.0.0.1:5200/websocket/}")
     private String uri;
 
     private Map<String,Session> map = new ConcurrentHashMap<>();
@@ -52,6 +52,11 @@ public class WebSocketClient {
     }
 
     public void sendTextMessage(String sessionId, String message) {
+
+        if(sessionId == null || sessionId.equals("")){
+            log.error("sessionId为空！");
+        }
+
         WebSocketContainer container;
         try {
             URI r = URI.create(uri + sessionId);
