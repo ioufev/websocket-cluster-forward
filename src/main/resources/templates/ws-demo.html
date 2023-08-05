@@ -9,6 +9,8 @@
             return uuidv4();
         }
 
+        connectWebSocket();
+
         function connectWebSocket() {
             let sessionId = localStorage.getItem("sessionId");
             if (!sessionId) {
